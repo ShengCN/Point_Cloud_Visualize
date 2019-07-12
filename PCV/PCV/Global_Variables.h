@@ -24,7 +24,7 @@ public:
 	// IMGUI
 	float rotation = 0.0f;
 	float scale_factor = 1.0f;
-	int int_slider = 1.0;
+	int int_slider = 1;
 
 	std::string title = "Adobe_PCV";
 	int width = 1080;
@@ -34,7 +34,7 @@ public:
 
 	// camera
 	float fov = 50.0f;
-	int last_time, delta_time;
+	double last_time, delta_time;
 	std::shared_ptr<PPC> cur_ppc;
 
 	const std::string pc_file = "test.txt";

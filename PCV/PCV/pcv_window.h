@@ -25,6 +25,28 @@ public:
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+		auto gv = Global_Variables::Instance();
+		if (key == GLFW_KEY_W){
+			// move back
+			std::cerr << "Pressed w \n";
+			gv->cur_ppc->Keyboard(CameraMovement::forward, gv->delta_time);
+		}
+		if (key == GLFW_KEY_A) {
+			// move back
+			std::cerr << "Pressed a \n";
+			gv->cur_ppc->Keyboard(CameraMovement::left, gv->delta_time);
+		}
+		if (key == GLFW_KEY_S) {
+			// move back
+			std::cerr << "Pressed s \n";
+			gv->cur_ppc->Keyboard(CameraMovement::backward, gv->delta_time);
+		}
+		if (key == GLFW_KEY_D) {
+			// move back
+			std::cerr << "Pressed d \n";
+			gv->cur_ppc->Keyboard(CameraMovement::right, gv->delta_time);
+		}
 	}
 
 	static void error_callback(int error, const char* description){

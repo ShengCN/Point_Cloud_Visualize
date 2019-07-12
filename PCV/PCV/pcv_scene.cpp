@@ -34,7 +34,7 @@ void pcv_scene::setup_scene()
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND | GL_MULTISAMPLE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glPointSize(10.0f);
+	glPointSize(1.0f);
 }
 
 void pcv_scene::draw()
@@ -42,7 +42,7 @@ void pcv_scene::draw()
 	auto gv = Global_Variables::Instance();
 
 	// ppc contorl
-
+	gv->cur_ppc->UpdatePPC();
 
 	// render all the objects
 	for (auto p : _pcs)

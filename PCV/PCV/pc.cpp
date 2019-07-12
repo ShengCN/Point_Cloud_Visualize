@@ -36,6 +36,12 @@ void pc::draw(int iteration, glm::mat4 P, glm::mat4 V){
 	auto islider_loc = glGetUniformLocation(_shader_program, "int_slider");
 	glUniform1i(islider_loc, gv->int_slider);
 
+	islider_loc = glGetUniformLocation(_shader_program, "w");
+	glUniform1i(islider_loc, gv->width);
+
+	islider_loc = glGetUniformLocation(_shader_program, "h");
+	glUniform1i(islider_loc, gv->height);
+
 	// vertex buffer
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);

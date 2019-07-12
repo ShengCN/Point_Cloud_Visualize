@@ -68,6 +68,10 @@ void pcv_window::show()
 		if (_cur_scene)
 			_cur_scene->draw();
 
+		// update global varialbes
+		gv->delta_time = glfwGetTime() - gv->last_time;
+		gv->last_time = glfwGetTime();
+
 		glfwSwapBuffers(_window);
 	}
 

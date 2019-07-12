@@ -19,8 +19,7 @@ float PPC::GetFocal()
 
 
 PPC::PPC(float _fov, float _aspect) :fov(_fov), aspect(_aspect),
-target(0.0f, 0.0f, 0.0f), position(0.0f, 0.35f, 1.3f), worldUp(0.0f, 1.0f, 0.0f),
-movingSpeed(0.05f)
+target(0.0f, 0.0f, 0.0f), position(0.0f, 0.35f, 1.3f), worldUp(0.0f, 1.0f, 0.0f)
 {
 	UpdatePPC();
 }
@@ -76,7 +75,7 @@ void PPC::Zoom(float delta)
 	fov = clamp(fov, 10.0f, 150.0f);
 }
 
-void PPC::Keyboard(CameraMovement cm, int deltaTime)
+void PPC::Keyboard(CameraMovement cm, float deltaTime)
 {
 	auto gv = Global_Variables::Instance();
 
