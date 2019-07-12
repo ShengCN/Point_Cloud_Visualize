@@ -101,7 +101,15 @@ void pcv_window::draw_gui()
 	ImGui::Begin("PC control");
 	auto gv = Global_Variables::Instance();
 	ImGui::SliderFloat("View angle", &gv->rotation, -180.0f, +180.0f);
-	ImGui::SliderFloat("Size", &gv->scale_factor, 0.0f, 1.0f);
+	ImGui::SliderFloat("Size", &gv->scale_factor, 0.0f, 2.0f);
+	ImGui::SameLine();
+	if (ImGui::Button("Rescale")){
+		if (gv->_cur_scene && gv->_cur_scene->_pcs.size() > 0)
+		{
+			gv->_cur_scene->_pcs[0]->rescale(gv->scale_factor);
+		}
+	}
+	ImGui::SliderInt("Int Slider", &gv->int_slider, 0, 10);
 	ImGui::End();
 
 	// static bool show_test = false;

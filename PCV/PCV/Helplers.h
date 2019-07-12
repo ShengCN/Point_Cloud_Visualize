@@ -5,6 +5,11 @@
 
 std::ostream& PrintGlmVec3(std::ostream& out, glm::vec3 v);
 
+inline std::ostream& operator<<(std::ostream& out, glm::vec3 v) {
+	out << v.x << "," << v.y << "," << v.z;
+	return out;
+}
+
 inline float Degree2Radian(float d)
 {
 	return static_cast<float>((d / 180.0f) * 3.1415926);

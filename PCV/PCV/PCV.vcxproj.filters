@@ -16,6 +16,9 @@
     <Filter Include="Header Files\imgui">
       <UniqueIdentifier>{0d456a1d-d31a-4797-bbab-f8119dc8877d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{7dc86006-4872-4603-a11e-e56649d1f253}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -128,5 +131,13 @@
     <ClInclude Include="pcv_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="point_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="point_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

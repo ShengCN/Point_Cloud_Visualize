@@ -18,7 +18,7 @@ void pcv_scene::setup_scene()
 
 	for (auto p : _pcs)
 	{
-		center += p->center() / float(num_pcs);
+		center += p->get_center() / float(num_pcs);
 	}
 
 	auto gv = Global_Variables::Instance();
@@ -34,6 +34,7 @@ void pcv_scene::setup_scene()
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND | GL_MULTISAMPLE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glPointSize(10.0f);
 }
 
 void pcv_scene::draw()

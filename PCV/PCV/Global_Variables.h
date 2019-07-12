@@ -8,6 +8,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "pcv_scene.h"
 #include "pc.h"
 #include "ppc.h"
 
@@ -21,8 +22,9 @@ public:
 	static Global_Variables* Instance();
 
 	// IMGUI
-	float rotation = 0;
-	float scale_factor = 1.0;
+	float rotation = 0.0f;
+	float scale_factor = 1.0f;
+	int int_slider = 1.0;
 
 	std::string title = "Adobe_PCV";
 	int width = 1080;
@@ -40,6 +42,9 @@ public:
 	const std::string fragment_shader = "point_fs.glsl";
 	glm::vec4 error_color = { 1.0f,0.0f,0.0f,1.0f };
 	glm::vec4 default_color = { 0.8f,0.8f, 0.8f, 1.0f };
+
+	// scene management
+	std::shared_ptr<pcv_scene> _cur_scene;
 
 private:
 	static Global_Variables* m_instance;

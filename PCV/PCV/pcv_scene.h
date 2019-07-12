@@ -19,8 +19,10 @@ public:
 	void draw();		// called by window
 
 // scene resources
-private:
 	std::vector<std::shared_ptr<pc>> _pcs;
 	int _iteration = 0;
+
+private:
+
 };
 

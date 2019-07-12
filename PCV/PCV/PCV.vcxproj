@@ -193,6 +193,10 @@
     <ClInclude Include="ppc.h" />
     <ClInclude Include="tm.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="point_fs.glsl" />
+    <None Include="point_vs.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

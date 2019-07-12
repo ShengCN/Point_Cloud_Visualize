@@ -17,13 +17,16 @@ public:
 	pc(const std::string vs, const std::string fs);
 	~pc();
 
-	void read_from_file(std::string fname);
 	void draw(int iteration, glm::mat4 P, glm::mat4 V);
 	bool init_shader();
 
+	// transform
+	glm::vec3 get_center();
+	void rescale(float fract);
+
 	// void init_vertices();
+	void read_from_file(std::string fname);
 	void load_pc(std::string file, float fract = 1.0);
-	glm::vec3 center();
 public:
 	std::vector<glm::vec3> _verts;
 	std::vector<glm::vec3> _colors;
