@@ -49,32 +49,34 @@ void pc::init_buffers()
 	glBufferData(GL_ARRAY_BUFFER, _verts.size() * sizeof(glm::vec3), &_verts[0], GL_DYNAMIC_DRAW);
 
 	auto pos_loc = glGetAttribLocation(_shader_program, "pos_attrib");
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3), BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(pos_loc);
+	glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), BUFFER_OFFSET(0));
 }
 
 void pc::load_pc(std::string file, float fract)
 {
 	_verts.clear();
 
-	std::ifstream input(file);
-	if (input.is_open())
-	{
-		std::string line;
-		while (std::getline(input, line))
-		{
-			size_t first_commas = line.find(",");
-			size_t second_commas = first_commas + 1 + line.substr(first_commas + 1).find(",");
-			float x = std::stof(line.substr(0, first_commas));
-			float y = std::stof(line.substr(first_commas + 1, second_commas));
-			float z = std::stof(line.substr(second_commas + 1));
+	//std::ifstream input(file);
+	//if (input.is_open())
+	//{
+	//	std::string line;
+	//	while (std::getline(input, line))
+	//	{
+	//		size_t first_commas = line.find(",");
+	//		size_t second_commas = first_commas + 1 + line.substr(first_commas + 1).find(",");
+	//		float x = std::stof(line.substr(0, first_commas));
+	//		float y = std::stof(line.substr(first_commas + 1, second_commas));
+	//		float z = std::stof(line.substr(second_commas + 1));
 
-			if(random_float() < fract)
-				_verts.push_back(glm::vec3(x, y, z));
-		}
-	}
-	else
-		std::cerr << "Cannot open file: " << file;
+	//		if(random_float() < fract)
+	//			_verts.push_back(glm::vec3(x, y, z));
+	//	}
+	//}
+	//else
+	//	std::cerr << "Cannot open file: " << file;
+
+	_verts.push_back(glm::vec3(0.0f,0.0f,0.0f));
 
 	init_buffers();
 }

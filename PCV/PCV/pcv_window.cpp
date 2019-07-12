@@ -47,16 +47,7 @@ int pcv_window::create_window(int w, int h, const std::string title)
 
 	glfwSwapInterval(1);
 
-	// init window
-
-	// imgui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(_window,true);
-	const char* glsl_version = "#version 130";
-	ImGui_ImplOpenGL3_Init(glsl_version);
+	init_gui();
 
 	return 0;
 }
@@ -72,8 +63,11 @@ void pcv_window::show()
 		glfwPollEvents();
 
 		draw_gui();		
+
 		// do draw calls here
-		
+		if (_cur_scene)
+			_cur_scene->draw();
+
 		glfwSwapBuffers(_window);
 	}
 
@@ -82,4 +76,42 @@ void pcv_window::show()
 	ImGui::DestroyContext();
 
 	glfwTerminate();
+}
+
+
+void pcv_window::init_gui()
+{
+	// imgui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(_window, true);
+	const char* glsl_version = "#version 130";
+	ImGui_ImplOpenGL3_Init(glsl_version);
+}
+
+void pcv_window::draw_gui()
+{
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	// ------------------------ Window ------------------------ //
+	ImGui::Begin("PC control");
+	auto gv = Global_Variables::Instance();
+	ImGui::SliderFloat("View angle", &gv->rotation, -180.0f, +180.0f);
+	ImGui::SliderFloat("Size", &gv->scale_factor, 0.0f, 1.0f);
+	ImGui::End();
+
+	// static bool show_test = false;
+	// ImGui::ShowTestWindow(&show_test);
+	ImGui::Render();
+
+	int display_w, display_h;
+	glfwGetFramebufferSize(_window, &display_w, &display_h);
+	glViewport(0, 0, display_w, display_h);
+	glClearColor(gv->default_color.x, gv->default_color.y, gv->default_color.z, gv->default_color.w);
+	glClear(GL_COLOR_BUFFER_BIT);
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

@@ -28,7 +28,7 @@ public:
 	int width = 1080;
 	int height = 720;;
 	int iteration = 0;
-	std::shared_ptr<pc> cur_pc;
+	bool is_update = true;
 
 	// camera
 	float fov = 50.0f;

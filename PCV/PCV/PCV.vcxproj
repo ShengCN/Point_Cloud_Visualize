@@ -168,6 +168,7 @@
     <ClCompile Include="LoadTexture.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pc.cpp" />
+    <ClCompile Include="pcv_scene.cpp" />
     <ClCompile Include="pcv_window.cpp" />
     <ClCompile Include="ppc.cpp" />
     <ClCompile Include="tm.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="LoadMesh.h" />
     <ClInclude Include="LoadTexture.h" />
     <ClInclude Include="pc.h" />
+    <ClInclude Include="pcv_scene.h" />
     <ClInclude Include="pcv_window.h" />
     <ClInclude Include="ppc.h" />
     <ClInclude Include="tm.h" />

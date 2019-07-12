@@ -20,7 +20,6 @@ public:
 	void read_from_file(std::string fname);
 	void draw(int iteration, glm::mat4 P, glm::mat4 V);
 	bool init_shader();
-	void init_buffers();
 
 	// void init_vertices();
 	void load_pc(std::string file, float fract = 1.0);
@@ -34,5 +33,9 @@ public:
 	GLuint _shader_program;
 	GLuint _vao, _vbo;
 	std::string _vs, _fs;
+
+// private functions
+private:
+	void init_buffers();
 };
 

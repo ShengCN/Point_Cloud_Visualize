@@ -6,7 +6,9 @@
 #include <imgui/imgui.h>
 #include <imgui/examples/imgui_impl_glfw.h>
 #include <imgui/examples/imgui_impl_opengl3.h>
+#include <vector>
 #include "Global_Variables.h"
+#include "pcv_scene.h"
 
 class pcv_window
 {
@@ -33,30 +35,11 @@ public:
 public:
 	int create_window(int w, int h, const std::string title);
 	void show();	// one thread one window
+	void draw_scene(std::shared_ptr<pcv_scene> scene) { _cur_scene = scene; };
 
 private:
-	void draw_gui() {
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		// ------------------------ Window ------------------------ //
-		ImGui::Begin("PC control");
-		auto gv = Global_Variables::Instance();
-		ImGui::SliderFloat("View angle", &gv->rotation, -180.0f, +180.0f);
-		ImGui::SliderFloat("Size", &gv->scale_factor, 0.0f, 1.0f);
-		ImGui::End();
-
-		// static bool show_test = false;
-		// ImGui::ShowTestWindow(&show_test);
-		ImGui::Render();
-
-		int display_w, display_h;
-		glfwGetFramebufferSize(_window, &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
-		glClearColor(gv->default_color.x, gv->default_color.y, gv->default_color.z, gv->default_color.w);
-		glClear(GL_COLOR_BUFFER_BIT);
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	}
+	void init_gui();
+	void draw_gui();
+	std::shared_ptr<pcv_scene> _cur_scene;
 };
 
