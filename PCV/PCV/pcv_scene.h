@@ -17,6 +17,7 @@ public:
 	
 	void setup_scene(); // set up camera
 	void draw();		// called by window
+	void reload_shaders();
 
 // scene resources
 	std::vector<std::shared_ptr<pc>> _pcs;

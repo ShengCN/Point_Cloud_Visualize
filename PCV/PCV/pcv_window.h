@@ -22,35 +22,27 @@ public:
 
 // callback functions
 public:
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
-
+	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	//static void mouse_callback()
+	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 		auto gv = Global_Variables::Instance();
-		if (key == GLFW_KEY_W){
-			// move back
-			std::cerr << "Pressed w \n";
-			gv->cur_ppc->Keyboard(CameraMovement::forward, gv->delta_time);
-		}
-		if (key == GLFW_KEY_A) {
-			// move back
-			std::cerr << "Pressed a \n";
-			gv->cur_ppc->Keyboard(CameraMovement::left, gv->delta_time);
-		}
-		if (key == GLFW_KEY_S) {
-			// move back
-			std::cerr << "Pressed s \n";
-			gv->cur_ppc->Keyboard(CameraMovement::backward, gv->delta_time);
-		}
-		if (key == GLFW_KEY_D) {
-			// move back
-			std::cerr << "Pressed d \n";
-			gv->cur_ppc->Keyboard(CameraMovement::right, gv->delta_time);
-		}
+		gv->cur_ppc->scroll(yoffset);
 	}
 
 	static void error_callback(int error, const char* description){
 		std::cerr << "Error: %s\n" << description << std::endl;
+	}
+
+	static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+		auto gv = Global_Variables::Instance();
+
+		if (glfwGetMouseButton(window, 0) == GLFW_PRESS && !ImGui::IsMouseHoveringAnyWindow()){
+			gv->cur_ppc->pan(xpos - gv->mouse_last_x);
+			gv->cur_ppc->pitch(ypos - gv->mouse_last_y);
+		}
+
+		gv->mouse_last_x = xpos;
+		gv->mouse_last_y = ypos;
 	}
 
 // public functions
@@ -63,5 +55,8 @@ private:
 	void init_gui();
 	void draw_gui();
 	std::shared_ptr<pcv_scene> _cur_scene;
+
+// GUI functions
+private:
 };
 

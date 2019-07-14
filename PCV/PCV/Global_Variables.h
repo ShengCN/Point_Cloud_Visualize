@@ -21,6 +21,15 @@ class Global_Variables
 public:
 	static Global_Variables* Instance();
 
+	bool is_dbg = false;
+
+	// mouse control
+	double mouse_last_x;
+	double mouse_last_y;
+
+	// keyboard contorl
+	bool is_speed_up = false;
+
 	// IMGUI
 	float rotation = 0.0f;
 	float scale_factor = 1.0f;
@@ -33,18 +42,19 @@ public:
 	bool is_update = true;
 
 	// camera
+	std::string default_ppc_file = "ppc_file.bin";
 	float fov = 50.0f;
-	double last_time, delta_time;
+	float last_time, delta_time;
 	std::shared_ptr<PPC> cur_ppc;
 
-	const std::string pc_file = "test.txt";
+	const std::string pc_file = "pc.txt";
 	const std::string vertex_shader = "point_vs.glsl";
 	const std::string fragment_shader = "point_fs.glsl";
 	glm::vec4 error_color = { 1.0f,0.0f,0.0f,1.0f };
 	glm::vec4 default_color = { 0.8f,0.8f, 0.8f, 1.0f };
 
 	// scene management
-	std::shared_ptr<pcv_scene> _cur_scene;
+	std::shared_ptr<pcv_scene> cur_scene;
 
 private:
 	static Global_Variables* m_instance;

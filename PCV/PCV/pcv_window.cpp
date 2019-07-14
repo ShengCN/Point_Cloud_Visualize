@@ -7,6 +7,57 @@ pcv_window::pcv_window(){
 pcv_window::~pcv_window(){
 }
 
+void pcv_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+	auto gv = Global_Variables::Instance();
+	if (key == GLFW_KEY_W) {
+		// move back
+		std::cerr << "Pressed w \n";
+		gv->cur_ppc->Keyboard(CameraMovement::forward, gv->delta_time);
+	}
+	if (key == GLFW_KEY_A) {
+		// move back
+		std::cerr << "Pressed a \n";
+		gv->cur_ppc->Keyboard(CameraMovement::left, gv->delta_time);
+	}
+	if (key == GLFW_KEY_S) {
+		// move back
+		std::cerr << "Pressed s \n";
+		gv->cur_ppc->Keyboard(CameraMovement::backward, gv->delta_time);
+	}
+	if (key == GLFW_KEY_D) {
+		// move back
+		std::cerr << "Pressed d \n";
+		gv->cur_ppc->Keyboard(CameraMovement::right, gv->delta_time);
+	}
+	if (key == GLFW_KEY_Q) {
+		gv->cur_ppc->elevate(gv->delta_time);
+	}
+	if (key == GLFW_KEY_E) {
+		gv->cur_ppc->elevate(-gv->delta_time);
+	}
+	if (key == GLFW_KEY_P) {
+		if (gv->cur_ppc->save(gv->default_ppc_file))
+			std::cerr << "PPC file saved. \n";
+	}
+	if (key == GLFW_KEY_LEFT_SHIFT)
+	{
+		if (action == GLFW_PRESS)
+		{
+			gv->is_speed_up = true;
+			std::cerr << "Speed up \n";
+		}
+		
+		if (action == GLFW_RELEASE)
+		{
+			gv->is_speed_up = false;
+			std::cerr << "Speed down \n";
+		}
+	}
+}
+
 int pcv_window::create_window(int w, int h, const std::string title)
 {
 	/* Initialize the library */
@@ -29,6 +80,8 @@ int pcv_window::create_window(int w, int h, const std::string title)
 	// callbacks
 	glfwSetErrorCallback(error_callback);
 	glfwSetKeyCallback(_window, key_callback);
+	glfwSetScrollCallback(_window, scroll_callback);
+	glfwSetCursorPosCallback(_window, cursor_position_callback);
 
 	// set up environment
 	glfwMakeContextCurrent(_window);
@@ -69,8 +122,8 @@ void pcv_window::show()
 			_cur_scene->draw();
 
 		// update global varialbes
-		gv->delta_time = glfwGetTime() - gv->last_time;
-		gv->last_time = glfwGetTime();
+		gv->delta_time = float(glfwGetTime() - gv->last_time);
+		gv->last_time = float(glfwGetTime());
 
 		glfwSwapBuffers(_window);
 	}
@@ -108,12 +161,16 @@ void pcv_window::draw_gui()
 	ImGui::SliderFloat("Size", &gv->scale_factor, 0.0f, 2.0f);
 	ImGui::SameLine();
 	if (ImGui::Button("Rescale")){
-		if (gv->_cur_scene && gv->_cur_scene->_pcs.size() > 0)
+		if (gv->cur_scene && gv->cur_scene->_pcs.size() > 0)
 		{
-			gv->_cur_scene->_pcs[0]->rescale(gv->scale_factor);
+			gv->cur_scene->_pcs[0]->rescale(gv->scale_factor);
 		}
 	}
 	ImGui::SliderInt("Int Slider", &gv->int_slider, 0, 10);
+	
+	if (ImGui::Button("Reload")) {
+		gv->cur_scene->reload_shaders();
+	}
 	ImGui::End();
 
 	// static bool show_test = false;

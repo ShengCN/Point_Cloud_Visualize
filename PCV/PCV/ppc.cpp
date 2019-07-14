@@ -5,11 +5,6 @@
 #include "Helplers.h"
 using namespace glm;
 
-void PPC::UpdatePPC()
-{
-	// default camera parameters.
-	front = glm::normalize(target - position);
-}
 
 float PPC::GetFocal()
 {
@@ -19,9 +14,8 @@ float PPC::GetFocal()
 
 
 PPC::PPC(float _fov, float _aspect) :fov(_fov), aspect(_aspect),
-target(0.0f, 0.0f, 0.0f), position(0.0f, 0.35f, 1.3f), worldUp(0.0f, 1.0f, 0.0f)
+ _position(0.0f, 0.35f, 1.3f), _worldUp(0.0f, 1.0f, 0.0f)
 {
-	UpdatePPC();
 }
 
 PPC::~PPC()
@@ -31,7 +25,8 @@ PPC::~PPC()
 vec3 PPC::GetRight()
 {
 	vec3 view = GetViewVec();
-	return cross(view, worldUp);
+	
+	return cross(view, _worldUp);
 }
 
 vec3 PPC::GetUp()
@@ -41,32 +36,29 @@ vec3 PPC::GetUp()
 
 void PPC::PositionAndOrient(vec3 p, vec3 lookatP, vec3 up)
 {
-	position = p;
-	target = lookatP;
-	worldUp = up;
-	UpdatePPC();
+	_position = p;
+	_front = glm::normalize(lookatP - p);
+	_worldUp = up;
 }
 
 glm::mat4 PPC::GetP()
 {
-	return glm::perspective(Degree2Radian(fov), aspect, 0.1f, 10000.0f);
+	return glm::perspective(Degree2Radian(fov), aspect, 0.01f, 10000.0f);
 }
 
 glm::mat4 PPC::GetV()
 {
-	// return glm::lookAt(position, position + front, worldUp);
-	return glm::lookAt(position, target, worldUp);
+	return glm::lookAt(_position, _position + _front, _worldUp);
+	// return glm::lookAt(_position, target, _worldUp);
 }
 
 void PPC::Rotate_Axis(glm::vec3 O, glm::vec3 axis, float angled)
 {
-	glm::vec3 CO = position - O;
+	glm::vec3 CO = _position - O;
 	auto rot_mat = glm::rotate(Degree2Radian(angled), normalize(axis));
 	CO = vec3(rot_mat * vec4(CO, 0.0f));
-	position = CO + O;
-	target = O;
+	_position = CO + O;
 
-	UpdatePPC();
 }
 
 void PPC::Zoom(float delta)
@@ -78,44 +70,71 @@ void PPC::Zoom(float delta)
 void PPC::Keyboard(CameraMovement cm, float deltaTime)
 {
 	auto gv = Global_Variables::Instance();
-
+	float moving_speed = gv->is_speed_up ? 20.0f : 1.0f;
+	
 	switch (cm)
 	{
 	case CameraMovement::forward:
-		position += movingSpeed * deltaTime * front;
+		_position += moving_speed * deltaTime * _front;
 		break;
 	case CameraMovement::backward:
 
-		position -= movingSpeed * deltaTime * front;
+		_position -= moving_speed * deltaTime * _front;
 		break;
 	case CameraMovement::left:
 
-		position -= movingSpeed * deltaTime * GetRight();
+		_position -= moving_speed * deltaTime * GetRight();
 		break;
 	case CameraMovement::right:
 
-		position += movingSpeed * deltaTime * GetRight();
+		_position += moving_speed * deltaTime * GetRight();
 		break;
 	case CameraMovement::up:
 
-		position += movingSpeed * deltaTime * GetUp();
+		_position += moving_speed * deltaTime * GetUp();
 		break;
 	case CameraMovement::down:
 
-		position -= movingSpeed * deltaTime * GetUp();
+		_position -= moving_speed * deltaTime * GetUp();
 		break;
 	default:
 		break;
 	}
-	UpdatePPC();
+}
+
+void PPC::pan(double deg)
+{
+	auto gv = Global_Variables::Instance();
+	deg = deg / gv->width * 10.0f;
+	//glm::mat4 rot_y = glm::rotate(Degree2Radian(deg), glm::vec3(0.0f, 1.0f, 0.0f));
+	//_front = glm::vec3(rot_y * glm::vec4(_front, 0.0f));
+	vec3 right = GetRight();
+	_front += right * float(deg);
+	_front = glm::normalize(_front);
+}
+
+void PPC::tilt(double deg)
+{
+	// #TODO
+}
+
+void PPC::pitch(double deg)
+{
+	auto gv = Global_Variables::Instance();
+	deg = deg / gv->height * 10.0f;
+	//glm::mat4 rot_x = glm::rotate(Degree2Radian(deg), glm::vec3(1.0f, 0.0f, 0.0f));
+	//_front = glm::vec3(rot_x * glm::vec4(_front, 0.0f));
+	vec3 up = GetUp();
+	_front += up * float(deg);
+	_front = glm::normalize(_front);
 }
 
 std::ostream& operator<<(std::ostream& out, PPC ppc)
 {
 	out << "Camera Position: ";
-	PrintGlmVec3(out, ppc.position);
+	PrintGlmVec3(out, ppc._position);
 	out << "Camera Front: ";
 	
-	PrintGlmVec3(out, ppc.front);
+	PrintGlmVec3(out, ppc._front);
 	return out;
 }

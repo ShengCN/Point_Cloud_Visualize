@@ -46,14 +46,22 @@ void pc::draw(int iteration, glm::mat4 P, glm::mat4 V){
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	glBufferData(GL_ARRAY_BUFFER, _verts.size() * sizeof(glm::vec3), &_verts[0], GL_DYNAMIC_DRAW);
-	glDrawArrays(GL_POINTS, 0, _verts.size());
+	glDrawArrays(GL_POINTS, 0, GLsizei(_verts.size()));
 	glBindVertexArray(0);
 }
 
 bool pc::init_shader()
 {
+	if (_shader_program != -1)
+		glDeleteShader(_shader_program);
+
 	_shader_program = InitShader(_vs.c_str(), _fs.c_str());
 	return _shader_program != -1;
+}
+
+void pc::reload_shader()
+{
+	init_shader();
 }
 
 void pc::init_buffers()
@@ -73,30 +81,36 @@ void pc::init_buffers()
 void pc::load_pc(std::string file, float fract)
 {
 	_verts.clear();
+	auto gv = Global_Variables::Instance();
 
-	std::ifstream input(file);
-	if (input.is_open())
+	// #delete
+	if (!gv->is_dbg)
 	{
-		std::string line;
-		while (std::getline(input, line))
+		std::ifstream input(file);
+		if (input.is_open())
 		{
-			size_t first_commas = line.find(",");
-			size_t second_commas = first_commas + 1 + line.substr(first_commas + 1).find(",");
-			float x = std::stof(line.substr(0, first_commas));
-			float y = std::stof(line.substr(first_commas + 1, second_commas));
-			float z = std::stof(line.substr(second_commas + 1));
+			std::string line;
+			while (std::getline(input, line))
+			{
+				size_t first_commas = line.find(",");
+				size_t second_commas = first_commas + 1 + line.substr(first_commas + 1).find(",");
+				float x = std::stof(line.substr(0, first_commas));
+				float y = std::stof(line.substr(first_commas + 1, second_commas));
+				float z = std::stof(line.substr(second_commas + 1));
 
-			if (random_float() < fract)
-				_verts.push_back(glm::vec3{ x, y, z });		
+				if (random_float() < fract)
+					_verts.push_back(glm::vec3{ x, -y, z });
+			}
+		}
+		else
+			std::cerr << "cannot open file: " << file;
+	}
+	else {
+		for (int i = 0; i < 10; ++i)
+		{
+			_verts.push_back(glm::vec3(random_float(), random_float(), random_float()));
 		}
 	}
-	else
-		std::cerr << "cannot open file: " << file;
-
-	//for (int i = 0; i < 10; ++i)
-	//{
-	//	_verts.push_back(glm::vec3(random_float(), random_float(), random_float()));
-	//}
 
 	std::cerr << "There are " << _verts.size() << " points \n";
 
@@ -106,7 +120,7 @@ void pc::load_pc(std::string file, float fract)
 glm::vec3 pc::get_center()
 {
 	glm::vec3 center(0.0f);
-	int num_vertice = _verts.size();
+	int num_vertice = int(_verts.size());
 
 	for (auto &v : _verts)
 	{

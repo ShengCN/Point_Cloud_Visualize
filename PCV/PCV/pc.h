@@ -19,6 +19,7 @@ public:
 
 	void draw(int iteration, glm::mat4 P, glm::mat4 V);
 	bool init_shader();
+	void reload_shader();
 
 	// transform
 	glm::vec3 get_center();

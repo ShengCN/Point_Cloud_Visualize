@@ -20,5 +20,5 @@ void main(void)
    // else
    //    fragcolor = vec4(1.0, sin(float(iterations) * 0.1), 0.0, 0.5);
 
-   fragcolor = vec4(1.0, sin(float(iterations) * 0.1), 0.0, 0.5);
+   fragcolor = vec4(0.7, 0.3, 0.0, 0.1);
 }

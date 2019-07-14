@@ -13,7 +13,7 @@ void pcv_scene::load_scene(const std::string scene_fname)
 void pcv_scene::setup_scene()
 {
 	// set up ppc given current pcs
-	glm::vec3 center = { 0.0f,0.0f,0.0f };
+	glm::vec3 center = { 0.0f, 0.0f, 0.0f };
 	int num_pcs = int(_pcs.size());
 
 	for (auto p : _pcs)
@@ -22,10 +22,12 @@ void pcv_scene::setup_scene()
 	}
 
 	auto gv = Global_Variables::Instance();
-	vec3 offset = { 0.0f,0.0f,10.0f };
+	vec3 offset = { 0.0f, 0.0f, 10.0f };
 
-	if (gv->cur_ppc)
-	{
+	if (gv->cur_ppc->load(gv->default_ppc_file)) {
+		std::cerr << "Load last time position \n";
+	}
+	else {
 		gv->cur_ppc->PositionAndOrient(center + offset, center, glm::vec3(0.0f, 1.0f, 0.0f));
 		std::cerr << "Initial ppc: " << *gv->cur_ppc;
 	}
@@ -34,7 +36,7 @@ void pcv_scene::setup_scene()
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND | GL_MULTISAMPLE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glPointSize(1.0f);
+	glPointSize(1.0);
 }
 
 void pcv_scene::draw()
@@ -42,7 +44,6 @@ void pcv_scene::draw()
 	auto gv = Global_Variables::Instance();
 
 	// ppc contorl
-	gv->cur_ppc->UpdatePPC();
 
 	// render all the objects
 	for (auto p : _pcs)
@@ -52,4 +53,11 @@ void pcv_scene::draw()
 
 	if(gv->is_update)
 		_iteration++;
+}
+
+void pcv_scene::reload_shaders()
+{
+	for (auto p : _pcs){
+		p->reload_shader();
+	}
 }

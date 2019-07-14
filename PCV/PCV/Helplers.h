@@ -10,12 +10,14 @@ inline std::ostream& operator<<(std::ostream& out, glm::vec3 v) {
 	return out;
 }
 
-inline float Degree2Radian(float d)
+template<typename T>
+inline float Degree2Radian(T d)
 {
 	return static_cast<float>((d / 180.0f) * 3.1415926);
 }
 
-inline float Radian2Degree(float r)
+template<typename T>
+inline float Radian2Degree(T r)
 {
 	return static_cast<float>((r / 3.14159265) * 180.0f);
 }
