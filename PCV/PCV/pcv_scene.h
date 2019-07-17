@@ -12,6 +12,8 @@ public:
 	~pcv_scene();
 
 	void add_pc(std::shared_ptr<pc> pc) { if (pc) _pcs.push_back(pc); };
+	void add_pc(const std::string depth_img_path);
+
 	void load_scene(const std::string scene_fname);
 	
 	

@@ -1,15 +1,18 @@
 #include <fstream>
 #include <iostream>
+#include <math.h>
 
 #include "Global_Variables.h"
 #include "pc.h"
 #include "InitShader.h"
 #include "Helplers.h"
+#include "LoadTexture.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i)) 
 
-pc::pc(const std::string vs, const std::string fs):_vs(vs), _fs(fs), _M(glm::translate(vec3(0.0f)))
+pc::pc(const std::string vs, const std::string fs) :_vs(vs), _fs(fs), _M(glm::translate(vec3(0.0f)))
 {
+	init_shader();
 }
 
 pc::~pc()
@@ -78,7 +81,7 @@ void pc::init_buffers()
 	glEnableVertexAttribArray(pos_loc);
 }
 
-void pc::load_pc(std::string file, float fract)
+void pc::load_pc(const std::string file, float fract /*= 1.0*/)
 {
 	_verts.clear();
 	auto gv = Global_Variables::Instance();
@@ -117,6 +120,45 @@ void pc::load_pc(std::string file, float fract)
 	init_buffers();
 }
 
+void pc::load_depth_img(const std::string fname)
+{
+	// x,y did not change according to h_fov or v_fov yet
+	std::shared_ptr<image> depth_img;
+	load_image(fname, depth_img);
+	
+	if (depth_img) {
+		_verts.clear();
+		_verts.resize(depth_img->_h * depth_img->_w);
+
+		std::cerr << "Point cloud loading begin \n";
+		std::cerr << "Width: " << depth_img->_w << " Height: " << depth_img->_h << std::endl;
+		for (int i = 0; i < depth_img->_h; ++i) {
+			for (int j = 0; j < depth_img->_w; ++j) {
+				glm::vec3 point;
+
+				// convert disparity value here 
+				point.z =  1.0 / depth_img->get_pixel(j, i).x;
+				point.y = (float)((float)i / depth_img->_h * 2.0 - 1.0) * point.z;
+				point.x = (float)((float)j / depth_img->_w * 2.0 - 1.0) * point.z;
+
+				_verts[(depth_img->_h - 1 - i) * depth_img->_w + j] = point;
+			}
+		}
+
+		std::cerr << "Point cloud loading finish \n";
+	}
+	else {
+		std::cerr << "Depth image has problem. " << std::endl;
+	}
+
+	init_buffers();
+}
+
+void pc::load_pixel(const std::string px_fname)
+{
+	// #TODO
+}
+
 glm::vec3 pc::get_center()
 {
 	glm::vec3 center(0.0f);
@@ -124,6 +166,9 @@ glm::vec3 pc::get_center()
 
 	for (auto &v : _verts)
 	{
+		if (std::isinf(v.x) || std::isinf(v.y) || std::isinf(v.z))
+			continue;
+
 		center += v / float(num_vertice);
 	}
 

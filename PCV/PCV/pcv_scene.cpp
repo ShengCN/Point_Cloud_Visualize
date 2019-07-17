@@ -1,8 +1,32 @@
+#include <filesystem>
 #include "pcv_scene.h"
 #include "Global_Variables.h"
+#include "Helplers.h"
 
 pcv_scene::~pcv_scene()
 {
+}
+
+void pcv_scene::add_pc(const std::string depth_img_path)
+{
+	auto gv = Global_Variables::Instance();
+	_pcs.clear();
+
+	// check if there exists final image, assume name convention: xxxx_depth, xxxx_final
+	std::string prefix = depth_img_path.substr(0, depth_img_path.find("_depth"));
+	auto final_fname = std::filesystem::path(prefix + "_final.png");
+
+	if (!std::filesystem::exists(final_fname)) {
+		// default
+		std::cerr << "Did not find final image. Are you using name convention: xxxx_depth, xxxx_final? " << std::endl;
+		std::shared_ptr<pc> new_pc = std::make_shared<pc>(gv->vertex_shader, gv->fragment_shader);
+		new_pc->load_depth_img(depth_img_path);
+		add_pc(new_pc);
+	}
+	else {
+		std::cerr << "Find final image. " << std::endl;
+
+	}
 }
 
 void pcv_scene::load_scene(const std::string scene_fname)
@@ -24,12 +48,12 @@ void pcv_scene::setup_scene()
 	auto gv = Global_Variables::Instance();
 	vec3 offset = { 0.0f, 0.0f, 10.0f };
 
-	if (gv->cur_ppc->load(gv->default_ppc_file)) {
+	if (gv->is_load_last_ppc && gv->cur_ppc->load(gv->default_ppc_file)) {
 		std::cerr << "Load last time position \n";
 	}
 	else {
 		gv->cur_ppc->PositionAndOrient(center + offset, center, glm::vec3(0.0f, 1.0f, 0.0f));
-		std::cerr << "Initial ppc: " << *gv->cur_ppc;
+		std::cerr << "Center: " << center << "\nInitial ppc: " << *gv->cur_ppc;
 	}
 
 	// set up opengl envrionment

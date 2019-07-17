@@ -25,6 +25,9 @@ public:
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	//static void mouse_callback()
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+		if (ImGui::IsMouseHoveringAnyWindow())
+			return;
+
 		auto gv = Global_Variables::Instance();
 		gv->cur_ppc->scroll(yoffset);
 	}
@@ -34,9 +37,12 @@ public:
 	}
 
 	static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+		if (ImGui::IsMouseHoveringAnyWindow())
+			return;
+
 		auto gv = Global_Variables::Instance();
 
-		if (glfwGetMouseButton(window, 0) == GLFW_PRESS && !ImGui::IsMouseHoveringAnyWindow()){
+		if (glfwGetMouseButton(window, 0) == GLFW_PRESS){
 			gv->cur_ppc->pan(xpos - gv->mouse_last_x);
 			gv->cur_ppc->pitch(ypos - gv->mouse_last_y);
 		}

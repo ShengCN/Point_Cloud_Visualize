@@ -27,7 +27,9 @@ public:
 
 	// void init_vertices();
 	void read_from_file(std::string fname);
-	void load_pc(std::string file, float fract = 1.0);
+	void load_pc(const std::string file, float fract = 1.0);
+	void load_depth_img(const std::string fname);
+	void load_pixel(const std::string px_fname);
 public:
 	std::vector<glm::vec3> _verts;
 	std::vector<glm::vec3> _colors;

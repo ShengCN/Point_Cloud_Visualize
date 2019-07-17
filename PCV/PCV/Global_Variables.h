@@ -22,12 +22,13 @@ public:
 	static Global_Variables* Instance();
 
 	bool is_dbg = false;
+	bool is_load_last_ppc = true;
 
 	// mouse control
 	double mouse_last_x;
 	double mouse_last_y;
 
-	// keyboard contorl
+	// keyboard control
 	bool is_speed_up = false;
 
 	// IMGUI
@@ -52,6 +53,9 @@ public:
 	const std::string fragment_shader = "point_fs.glsl";
 	glm::vec4 error_color = { 1.0f,0.0f,0.0f,1.0f };
 	glm::vec4 default_color = { 0.8f,0.8f, 0.8f, 1.0f };
+
+	// resources
+	const std::string depth_image_folder = "./depth_images/";
 
 	// scene management
 	std::shared_ptr<pcv_scene> cur_scene;

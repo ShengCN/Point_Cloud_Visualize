@@ -5,6 +5,8 @@
 #include "pcv_scene.h"
 #include "pc.h"
 #include "ppc.h"
+#include "LoadTexture.h"
+#include "Helplers.h"
 
 int main(void){	
 	auto gv = Global_Variables::Instance();
@@ -16,9 +18,8 @@ int main(void){
 	std::shared_ptr<pcv_scene> cur_scene = std::make_shared<pcv_scene>();
 	gv->cur_scene = cur_scene;
 
-	// create point cloud
+	//// create point cloud
 	std::shared_ptr<pc> pc0 = std::make_shared<pc>(gv->vertex_shader, gv->fragment_shader);
-	pc0->init_shader();
 	pc0->load_pc(gv->pc_file, 1.0);
 
 	// add clouds into current scene

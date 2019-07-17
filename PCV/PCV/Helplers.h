@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
 #include <random>
+#include <filesystem>
 
 std::ostream& PrintGlmVec3(std::ostream& out, glm::vec3 v);
 
@@ -33,4 +34,12 @@ inline float random_float(float min=0.0, float max=1.0) {
 	std::mt19937 engine(rd());
 	std::uniform_real_distribution<float> u(min, max);
 	return u(engine);
+}
+
+inline std::vector<std::string> get_files(const std::string folder) {
+	std::vector<std::string> files;
+	for (const auto& entry : std::filesystem::directory_iterator(folder)) {
+		files.push_back(entry.path().string());
+	}
+	return files;
 }

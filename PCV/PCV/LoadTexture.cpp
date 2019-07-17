@@ -31,3 +31,19 @@ GLuint LoadTexture(const std::string& fname)
 
    return tex_id;
 }
+
+void load_image(const std::string fname, std::shared_ptr<image>& img_ptr)
+{
+	FIBITMAP* tempImg = FreeImage_Load(FreeImage_GetFileType(fname.c_str(), 0), fname.c_str());
+	FIBITMAP* img = FreeImage_ConvertTo32Bits(tempImg);
+
+	FreeImage_Unload(tempImg);
+
+	GLuint w = FreeImage_GetWidth(img);
+	GLuint h = FreeImage_GetHeight(img);
+	GLuint scanW = FreeImage_GetPitch(img);
+
+	img_ptr = std::make_shared<image>(w, h, 4);
+	FreeImage_ConvertToRawBits((BYTE*)&img_ptr->_data[0], img, scanW, 32, FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, FALSE);
+	FreeImage_Unload(img);
+}

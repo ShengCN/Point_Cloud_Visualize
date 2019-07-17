@@ -1,4 +1,6 @@
 #include "pcv_window.h"
+#include "Helplers.h"
+#include "LoadTexture.h"
 
 pcv_window::pcv_window(){
 }
@@ -114,14 +116,20 @@ void pcv_window::show()
 	while (!glfwWindowShouldClose(_window))
 	{
 		glfwPollEvents();
-
-		draw_gui();		
+		
+		int display_w, display_h;
+		glfwGetFramebufferSize(_window, &display_w, &display_h);
+		glViewport(0, 0, display_w, display_h);
+		glClearColor(gv->default_color.x, gv->default_color.y, gv->default_color.z, gv->default_color.w);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		// do draw calls here
 		if (_cur_scene)
 			_cur_scene->draw();
+		
+		draw_gui();
 
-		// update global varialbes
+		// update global variables
 		gv->delta_time = float(glfwGetTime() - gv->last_time);
 		gv->last_time = float(glfwGetTime());
 
@@ -148,6 +156,7 @@ void pcv_window::init_gui()
 	ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
+// #draw_gui
 void pcv_window::draw_gui()
 {
 	ImGui_ImplOpenGL3_NewFrame();
@@ -171,16 +180,37 @@ void pcv_window::draw_gui()
 	if (ImGui::Button("Reload")) {
 		gv->cur_scene->reload_shaders();
 	}
+
+	// select files
+	auto files = get_files(gv->depth_image_folder);
+	static int selected = -1;
+	for (int n = 0; n < files.size(); n++)
+	{
+		if (ImGui::Selectable(files[n].c_str(), selected == n))
+			selected = n;
+	}
+	if (ImGui::Button("Show Depth")) {
+		if (selected != -1) {
+			std::cerr << "Visualize " << files[selected] << std::endl;
+			
+			gv->cur_scene->add_pc(files[selected]);
+			gv->cur_scene->setup_scene();
+		}
+		else {
+			std::cerr << "Please select a file \n";
+		}
+	}
+
+	if (selected != -1) {
+		static GLuint tex_id = -1;
+		if (tex_id == -1) {
+			tex_id = LoadTexture(files[selected]);
+		}
+		ImGui::Image((ImTextureID)tex_id, ImVec2(200, 150), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+	}
 	ImGui::End();
 
-	// static bool show_test = false;
-	// ImGui::ShowTestWindow(&show_test);
+	// ImGui::ShowTestWindow();
 	ImGui::Render();
-
-	int display_w, display_h;
-	glfwGetFramebufferSize(_window, &display_w, &display_h);
-	glViewport(0, 0, display_w, display_h);
-	glClearColor(gv->default_color.x, gv->default_color.y, gv->default_color.z, gv->default_color.w);
-	glClear(GL_COLOR_BUFFER_BIT);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
