@@ -16,12 +16,12 @@ struct image
 	image(int w, int h, int c) :_w(w), _h(h), _c(c) { _data = std::vector<unsigned int>(_w * _h * _c); }
 
 	glm::vec4 get_pixel(int wi, int hi) {
-		unsigned int color = _data[(_h - 1 - hi) * _w + wi];
+		unsigned int color = _data[(hi) * _w + wi];
 		glm::vec4 c;
-		c.x = (float)(((char*)&color)[0] / 255.0);
-		c.y = (float)(((char*)&color)[1] / 255.0);
-		c.z = (float)(((char*)&color)[2] / 255.0);
-		c.a = (float)(((char*)&color)[3] / 255.0);
+		c.x = (unsigned)((char*)&color)[0] / 255.0f;
+		c.y = (unsigned)((char*)&color)[1] / 255.0f;
+		c.z = (unsigned)((char*)&color)[2] / 255.0f;
+		c.a = (unsigned)((char*)&color)[3] / 255.0f;
 
 		return c;
 	}

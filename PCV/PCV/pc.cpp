@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <math.h>
+#include <algorithm>
 
 #include "Global_Variables.h"
 #include "pc.h"
@@ -132,19 +133,25 @@ void pc::load_depth_img(const std::string fname)
 
 		std::cerr << "Point cloud loading begin \n";
 		std::cerr << "Width: " << depth_img->_w << " Height: " << depth_img->_h << std::endl;
+
+		float min_z = 10.0f;
+		float max_z = -1.0f;
 		for (int i = 0; i < depth_img->_h; ++i) {
 			for (int j = 0; j < depth_img->_w; ++j) {
 				glm::vec3 point;
 
 				// convert disparity value here 
-				point.z =  1.0 / depth_img->get_pixel(j, i).x;
+				point.z = (float)1.0 / depth_img->get_pixel(j, i).x;
 				point.y = (float)((float)i / depth_img->_h * 2.0 - 1.0) * point.z;
 				point.x = (float)((float)j / depth_img->_w * 2.0 - 1.0) * point.z;
 
 				_verts[(depth_img->_h - 1 - i) * depth_img->_w + j] = point;
+
+				min_z = std::min(min_z, point.z);
+				max_z = std::max(max_z, point.z);
 			}
 		}
-
+		std::cerr << "min z" << min_z << " " << "max z: " << max_z << std::endl;
 		std::cerr << "Point cloud loading finish \n";
 	}
 	else {
