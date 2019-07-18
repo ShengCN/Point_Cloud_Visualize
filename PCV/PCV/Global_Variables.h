@@ -21,8 +21,8 @@ class Global_Variables
 public:
 	static Global_Variables* Instance();
 
-	bool is_dbg = false;
-	bool is_load_last_ppc = true;
+	bool is_dbg = true;
+	bool is_load_last_ppc = false;
 
 	// mouse control
 	double mouse_last_x;

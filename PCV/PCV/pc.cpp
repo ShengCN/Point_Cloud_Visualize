@@ -27,6 +27,11 @@ void pc::read_from_file(std::string fname)
 void pc::draw(int iteration, glm::mat4 P, glm::mat4 V){
 	glUseProgram(_shader_program);
 	
+	if (!_is_buffer_init) {
+		init_buffers();
+		_is_buffer_init = true;
+	}
+
 	auto gv = Global_Variables::Instance();
 
 	// uniform variables
@@ -48,8 +53,6 @@ void pc::draw(int iteration, glm::mat4 P, glm::mat4 V){
 
 	// vertex buffer
 	glBindVertexArray(_vao);
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, _verts.size() * sizeof(glm::vec3), &_verts[0], GL_DYNAMIC_DRAW);
 	glDrawArrays(GL_POINTS, 0, GLsizei(_verts.size()));
 	glBindVertexArray(0);
 }
@@ -75,11 +78,30 @@ void pc::init_buffers()
 
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, _verts.size() * sizeof(glm::vec3), &_verts[0], GL_DYNAMIC_DRAW);
+	
+	if (!_colors.empty()) {
+		glBufferData(GL_ARRAY_BUFFER, (_verts.size() + _colors.size()) * sizeof(glm::vec3), 0, GL_DYNAMIC_DRAW);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, _verts.size() * sizeof(glm::vec3), &_verts[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, _verts.size() * sizeof(glm::vec3), _colors.size() * sizeof(glm::vec3), &_colors[0]);
+	}
+	else {
+		glBufferData(GL_ARRAY_BUFFER, _verts.size() * sizeof(glm::vec3), &_verts[0], GL_DYNAMIC_DRAW);
+	}
 
-	auto pos_loc = glGetAttribLocation(_shader_program, "pos_attrib");
-	glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	glEnableVertexAttribArray(pos_loc);
+	if (!_colors.empty()) {
+		auto attrib_loc = glGetAttribLocation(_shader_program, "pos_attrib");
+		glVertexAttribPointer(attrib_loc, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+		glEnableVertexAttribArray(attrib_loc);
+
+		attrib_loc = glGetAttribLocation(_shader_program, "col_attrib");
+		glVertexAttribPointer(attrib_loc, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(_verts.size() * sizeof(glm::vec3)));
+		glEnableVertexAttribArray(attrib_loc);
+	}
+	else {
+		auto attrib_loc = glGetAttribLocation(_shader_program, "pos_attrib");
+		glVertexAttribPointer(attrib_loc, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+		glEnableVertexAttribArray(attrib_loc);
+	}
 }
 
 void pc::load_pc(const std::string file, float fract /*= 1.0*/)
@@ -118,7 +140,7 @@ void pc::load_pc(const std::string file, float fract /*= 1.0*/)
 
 	std::cerr << "There are " << _verts.size() << " points \n";
 
-	init_buffers();
+	//init_buffers();
 }
 
 void pc::load_depth_img(const std::string fname)
@@ -129,6 +151,7 @@ void pc::load_depth_img(const std::string fname)
 	
 	if (depth_img) {
 		_verts.clear();
+		_colors.clear();
 		_verts.resize(depth_img->_h * depth_img->_w);
 
 		std::cerr << "Point cloud loading begin \n";
@@ -158,12 +181,29 @@ void pc::load_depth_img(const std::string fname)
 		std::cerr << "Depth image has problem. " << std::endl;
 	}
 
-	init_buffers();
+	//init_buffers();
 }
 
 void pc::load_pixel(const std::string px_fname)
 {
 	// #TODO
+	std::shared_ptr<image> pixel_img;
+	load_image(px_fname, pixel_img);
+
+	if (pixel_img) {
+		_colors.clear();
+		_colors.resize(pixel_img->_w * pixel_img->_h);
+
+		for (int i = 0; i < pixel_img->_h; ++i) {
+			for (int j = 0; j < pixel_img->_w; ++j) {
+				_colors[(pixel_img->_h - 1 - i) * pixel_img->_w + j] = glm::vec3(pixel_img->get_pixel(j,i));
+			}
+		}
+		std::cerr << "Point cloud color loading finish \n";
+	}
+	else {
+		std::cerr << "Pixel image has problem." << std::endl;
+	}
 }
 
 glm::vec3 pc::get_center()

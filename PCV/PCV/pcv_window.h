@@ -37,12 +37,9 @@ public:
 	}
 
 	static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-		if (ImGui::IsMouseHoveringAnyWindow())
-			return;
-
 		auto gv = Global_Variables::Instance();
 
-		if (glfwGetMouseButton(window, 0) == GLFW_PRESS){
+		if (!ImGui::IsMouseHoveringAnyWindow() && glfwGetMouseButton(window, 0) == GLFW_PRESS){
 			gv->cur_ppc->pan(xpos - gv->mouse_last_x);
 			gv->cur_ppc->pitch(ypos - gv->mouse_last_y);
 		}

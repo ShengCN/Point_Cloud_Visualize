@@ -121,7 +121,7 @@ void pcv_window::show()
 		glfwGetFramebufferSize(_window, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 		glClearColor(gv->default_color.x, gv->default_color.y, gv->default_color.z, gv->default_color.w);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// do draw calls here
 		if (_cur_scene)
@@ -184,6 +184,7 @@ void pcv_window::draw_gui()
 	// select files
 	auto files = get_files(gv->depth_image_folder);
 	static int selected = -1;
+	static int last_selected = -1;
 	for (int n = 0; n < files.size(); n++)
 	{
 		if (ImGui::Selectable(files[n].c_str(), selected == n))
@@ -201,13 +202,14 @@ void pcv_window::draw_gui()
 		}
 	}
 
-	if (selected != -1) {
-		static GLuint tex_id = -1;
-		if (tex_id == -1) {
-			tex_id = LoadTexture(files[selected]);
-		}
-		ImGui::Image((ImTextureID)tex_id, ImVec2(200, 150), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+	static GLuint tex_id = -1;
+	if (selected != -1 && last_selected != selected) {
+		tex_id = LoadTexture(files[selected]);
+		last_selected = selected;
 	}
+
+	if(tex_id != -1)
+		ImGui::Image((ImTextureID)tex_id, ImVec2(200, 150), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
 	ImGui::End();
 
 	// ImGui::ShowTestWindow();

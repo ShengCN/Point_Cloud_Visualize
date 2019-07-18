@@ -5,10 +5,7 @@ uniform int int_slider;
 uniform int w;
 uniform int h;
 
-in vec2 gl_PointCoord;
-
-in vec4 gl_FragCoord;
-
+in vec3 vs_col;
 out vec4 fragcolor;           
 
 void main(void)
@@ -20,5 +17,10 @@ void main(void)
    // else
    //    fragcolor = vec4(1.0, sin(float(iterations) * 0.1), 0.0, 0.5);
 
-   fragcolor = vec4(0.7, 0.3, 0.0, 0.1);
+   if(length(vs_col) < 0.01f){
+      fragcolor = vec4(0.7f, 0.3f, 0.0f, 0.0f);
+   }
+   else{
+      fragcolor = vec4(vs_col, 1.0f);
+   }
 }

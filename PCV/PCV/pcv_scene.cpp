@@ -25,7 +25,10 @@ void pcv_scene::add_pc(const std::string depth_img_path)
 	}
 	else {
 		std::cerr << "Find final image. " << std::endl;
-
+		std::shared_ptr<pc> new_pc = std::make_shared<pc>(gv->vertex_shader, gv->fragment_shader);
+		new_pc->load_depth_img(depth_img_path);
+		new_pc->load_pixel(final_fname.string());
+		add_pc(new_pc);
 	}
 }
 
@@ -46,7 +49,7 @@ void pcv_scene::setup_scene()
 	}
 
 	auto gv = Global_Variables::Instance();
-	vec3 offset = { 0.0f, 0.0f, 10.0f };
+	vec3 offset = { 0.0f, 0.0f, -10.0f };
 
 	if (gv->is_load_last_ppc && gv->cur_ppc->load(gv->default_ppc_file)) {
 		std::cerr << "Load last time position \n";
@@ -57,9 +60,9 @@ void pcv_scene::setup_scene()
 	}
 
 	// set up opengl envrionment
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND | GL_MULTISAMPLE);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// glDisable(GL_DEPTH_TEST);
+	glEnable( GL_DEPTH_TEST);
+	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glPointSize(1.0);
 }
 

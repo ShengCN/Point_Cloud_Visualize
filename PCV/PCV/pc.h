@@ -42,6 +42,7 @@ public:
 
 // private functions
 private:
+	bool _is_buffer_init = false;
 	void init_buffers();
 };
 
